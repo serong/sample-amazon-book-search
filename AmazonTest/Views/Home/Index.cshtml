@@ -1,0 +1,106 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<script type="text/javascript">
+    function displayPrice(usd, ratio) {
+        //if (typeof(ratio) === 'undefined') {
+        //    ratio = 1;
+        //}
+        return usd * ratio;
+    }
+</script>
+
+<div class="row">
+    <div class="col-md-8 col-md-offset-2 panel-primary">
+        <div class="panel-heading heading">
+            <h1 class="panel-title text-center">
+                <strong>BOOK SEARCH</strong>
+            </h1>
+        </div>
+        <div class="panel-footer text-center">
+            <p>Book search in Amazon, using Amazon's <em>Product Advertising API</em>.</p>
+        </div>
+        <div class="panel-body">
+        
+                <div class="col-md-12 text-right search-form">
+                    <form class="form-inline" role="search">
+                        <div class="form-group">
+                            <input type="text" class="form-control search-bar" placeholder="Search books in Amazon..." name="search">
+                        </div>
+                    </form>                    
+                </div>
+
+
+                @if (ViewBag.Books.Count == 0)
+                {
+                    <!-- Display no results. -->
+                    <div class="col-md-12">
+                        <h3 class="text-center text-info">No results to display.</h3>
+                    </div>
+                }
+                else
+                {
+                    <!-- Currency conversion. -->
+                    <div class="col-md-6 col-sm-12">
+                        <form class="navbar-form navbar-left">
+                            <input class="btn btn-success" type="button" name="currencyButton" value="Change To" id="currencyButton" />
+                            <div class="form-group">
+                                <!-- Limited currencies were used for test purposes. -->
+                                <select name="currency" class="form-control">
+                                    <option value="USD" selected>American Dollar</option>
+                                    <option value="EUR">Euro</option>
+                                    <option value="JPY">Japanese Yen</option>
+                                    <option value="GBP">Pound Sterling</option>
+                                    <option value="TRY">Turkish Lira</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+
+                    <hr />  
+
+                    <div class="col-md-12 col-sm-12">
+                        <table class="table display hover" id="data">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th id="currencyHeader">Price (USD)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var book in ViewBag.Books)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="@book.GetUrl()">
+                                                @if (@book.GetImageURL() == "")
+                                                {
+                                                    <p>No image found.</p>
+                                                }
+                                                else
+                                                {
+                                                    <img src="@book.GetImageURL()" width="110" height="160" />
+                                                }
+                                            </a>
+                                        </td>
+                                        <td>
+                                            @book.GetTitle()
+                                        </td>
+                                        <td>
+                                            @book.GetAuthor()
+                                        </td>
+                                        <td class="currency">@book.GetPriceStr()</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div> 
+                }
+
+        </div>
+    </div>
+
+</div>

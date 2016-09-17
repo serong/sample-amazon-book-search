@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Test - @ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link href="@Url.Content("/Content/jquery.dataTables.min.css")" rel="stylesheet" />
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <script type="text/javascript" src="@Url.Content("/Scripts/jquery.dataTables.min.js")"></script>
+    @RenderSection("scripts", required: false)
+
+    <script type="text/javascript">
+        var ratio = 10;
+        var currentCurrency = "USD";
+
+        $(document).ready(function () {
+            // alert("Hello");
+            $("#currencyButton").click(function (e) {
+                var newCurrency = $("[name=currency]").val();
+                $.ajax({
+                    url: '@Url.Action("ReturnRatio")',
+                    type: "post",
+                    data: {currentCurrency: currentCurrency, newCurrency: newCurrency},
+                    success: function (data) {
+
+                        // Updating values in a vanilla table.
+                        // NOT: This doesn't work properly with DataTables() extension.
+
+                        //var prices = $(".currency").map(function () {
+                        //    var old = parseFloat($(this).html());
+                        //    var ratio = parseFloat(data);
+                        //    var newPrice = (old * ratio).toFixed(2);
+                        //    $(this).html(newPrice);
+                        //});
+
+                        // Updating currency name.
+                        currentCurrency = newCurrency;
+                        $("#currencyHeader").html("Price (" + currentCurrency + ")");
+
+                        // Updating the cells with DataTables() api.
+                        var ratio = parseFloat(data);
+                        var table = $('#data').DataTable();
+                        var cells = table.cells(".currency");
+                        cells = cells[0];
+                        for (i = 0; i < cells.length; i++) {
+                            var c = cells[i];
+                            var old = table.cell(c).data();
+                            table.cell(c).data((old * ratio).toFixed(2));
+                        }
+                    }
+                });
+            });
+        });
+
+        $(document).ready(function () {
+            $('#data').DataTable({
+                "lengthMenu": [13],
+                "bLengthChange": false,
+                "bFilter": false,
+                "language": {
+                    "decimal": "."
+                }
+            });
+        });
+    </script>
+
+</head>
+<body>
+    <div class="container">
+
+        <!-- Content goes here. -->
+        @RenderBody()
+
+        <div class="row">
+            <footer class="col-md-12 text-center main-footer">
+                <h5>Product Search Example - Using JQuery, DataTables, .NET and Bootstrap</h5>
+                <h4>@DateTime.Now.Year</h4>
+            </footer>
+        </div>
+        
+    </div>
+
+
+</body>
+</html>
